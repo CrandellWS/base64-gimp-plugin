@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# base64_file_encoder.py: Encode current image to base64 and put it in image directory
+# base64_file_encoder.py: Encode current image to base64 and put it in image directory, option available in menu: File/Encode to base64
 
 #     Copyright 2015 Marcin Karpezo <marcin@karpezo.pl>
 #
