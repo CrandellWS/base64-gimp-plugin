@@ -23,12 +23,12 @@ import re
 import gtk
 from gimpfu import *
 
-def plugin_main() :
+def plugin_main(img) :
     # great encoing line taken from:
     # http://dev-maziarz.blogspot.com/2015/02/gimp-how-to-export-image-to-base64.html
     # Thanks!
 
-    file = gimp.image_list()[0].filename
+    file = img.filename
 
     if not file:
       message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
@@ -54,6 +54,7 @@ register(
     "Encode to base64",
     "*",
     [
+      (PF_IMAGE, "image", "Input image", None),
     ],
     [],
     plugin_main,
