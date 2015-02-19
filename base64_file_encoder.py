@@ -20,6 +20,7 @@
 
 import base64
 import re
+import gtk
 from gimpfu import *
 
 def plugin_main() :
@@ -28,10 +29,19 @@ def plugin_main() :
     # Thanks!
 
     file = gimp.image_list()[0].filename
-    output_file = re.sub(r'png$', 'base64', file)
+
+    if not file:
+      message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
+      message.set_markup("Please save your file first!")
+      message.run()
+
+    (prefix, sep, suffix) = file.rpartition('.')
+
+    output_file = prefix + '.base64'
 
     opened_file = open(output_file, "w")
-    opened_file.write(base64.b64encode(open(file, "rb").read()))
+    base64_f = base64.b64encode(open(file, "rb").read())
+    opened_file.write(base64_f)
     opened_file.close()
 
 register(
