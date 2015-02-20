@@ -20,7 +20,12 @@
 
 import base64
 import re
+import subprocess
+import pygtk
+pygtk.require('2.0')
 import gtk
+import gtk.gdk
+import gobject
 from gimpfu import *
 
 def plugin_main(img) :
@@ -42,6 +47,16 @@ def plugin_main(img) :
     opened_file = open(output_file, "w")
     base64_f = base64.b64encode(open(file, "rb").read())
     opened_file.write(base64_f)
+
+    for clip_target in [gtk.gdk.SELECTION_PRIMARY, gtk.gdk.SELECTION_CLIPBOARD]:
+      clipboard = gtk.clipboard_get(clip_target)
+      clipboard.set_can_store(None)
+      clipboard.set_text(base64_f, -1)
+      clipboard.store()
+
+    #gobject.timeout_add(10000, gtk.main_quit)
+    gtk.main()
+
     opened_file.close()
 
 register(
