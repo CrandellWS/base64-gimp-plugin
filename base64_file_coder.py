@@ -3,6 +3,7 @@
 # base64_file_coder.py: Encode (and todo decode) current image to(from) base64 and put it in image directory, option available in menu: File/Base64 Encode
 
 #     Copyright 2015 William Crandell <william@crandell.ws>
+#     Copyright 2015 Marcin Karpezo <marcin@karpezo.pl>
 #
 #     This program is free software; you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by
