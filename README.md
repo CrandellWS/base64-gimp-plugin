@@ -1,13 +1,19 @@
-# gimp-plugin-base64_file_coder
-Encode current image to base64 and put it in clipboard and image directory
+## Welcome to the Base64 Plugin for Gimp.
 
-## Instalation:
+***
+![Menu View](http://crandellws.github.io/base64-gimp-plugin/images/base64_batch_encoder.png)
 
-Put base64_file_coder.py in `~/.gimp-2.8/plug-ins` and set the file permissions to execute via RMB→Properties or `chmod +x base64_file_coder.py`.
+### Base64 Batch Encoder
+Batch Encode png, jpeg, gif and xcf images from selected directory to Base64. Output is saved in same directory as a single html file, multiple html files or base64 file format. Additionally export provides ability to save all xcf files to png.
 
-## Usage:
-You'll find new command under File/Base64 Encode
+### Base64 File Encoder
+Encode single image selected image to Base64, saving output in same directory as a single html file, multiple html files or base64 file format. Additionally provides option to load image to system clipboard for pasting elsewhere in either format. 
 
-After running it you'll be able to copy base64 code from clipboard and find your encoded file in image directory with *.base64 extension as well as a html file with a single img tag.
+### Menu Location:
+File/Export/Base64
 
-**IT DOESN'T OVERWRITE YOUR IMAGE FILE**
+***
+
+### Instalation:
+
+Put base64_encoder.py in `~/.gimp-2.8/plug-ins` and set the file permissions to execute via **Right Mouse Button** → Properties or `chmod +x base64_encoder.py`.
