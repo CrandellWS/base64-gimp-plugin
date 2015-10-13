@@ -23,6 +23,9 @@ from os.path import dirname, basename, exists, split, isfile
 from os import getcwd, sep, makedirs, remove, rmdir
 from mimetypes import guess_type
 from base64 import b64encode
+import pygtk
+pygtk.require('2.0')
+import gtk
 from gimpfu import *
 
 # from gimpenums import *
@@ -188,6 +191,78 @@ def plugin_batch_encoder( source, b64_output, html_output, xcf, keep_png, png, j
             base64_file(file_data[data], overwrite)
     return
 
+def plugin_encode() :
+    # great encoing line taken from:
+    # http://dev-maziarz.blogspot.com/2015/02/gimp-how-to-export-image-to-base64.html
+    # Thanks, Marcin Karpezo <marcin@karpezo.pl> for the plugin framework.
+
+    inFile = None
+    dialog = gtk.FileChooserDialog("Choose file to base64 encode...",
+                                 None,
+                                 gtk.FILE_CHOOSER_ACTION_OPEN,
+                                 (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                                  gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+    dialog.set_default_response(gtk.RESPONSE_OK)
+
+    filter = gtk.FileFilter()
+    filter.set_name("Images")
+    filter.add_mime_type("image/png")
+    filter.add_mime_type("image/jpeg")
+    filter.add_mime_type("image/gif")
+    filter.add_pattern("*.png")
+    filter.add_pattern("*.jpg")
+    filter.add_pattern("*.gif")
+    dialog.add_filter(filter)
+
+    response = dialog.run()
+
+    message = None
+    if response == gtk.RESPONSE_OK:
+        message = gtk.MessageDialog(type=gtk.MESSAGE_INFO, buttons=gtk.BUTTONS_OK)
+        inFile=dialog.get_filename()
+    elif response == gtk.RESPONSE_CANCEL:
+        message = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_OK)
+        message.set_markup('Closed, no files selected')
+        message.destroy()
+        gimp.quit()
+
+    dialog.destroy()
+    message.set_markup(inFile)
+    message.run()
+
+    (prefix, sep, suffix) = inFile.rpartition('.')
+
+    output_file = prefix + '.base64'
+
+    message.set_markup(output_file)
+    message.run()
+    opened_file = open(output_file, "w")
+    mtype = guess_type(inFile)
+
+    openedImage = open(inFile, "rb").read()
+    base64_f = b64encode(openedImage)
+    opened_file.write(base64_f)
+    opened_file.close()
+
+      
+    html_template = """<img src='data:%s;base64,%s' alt='%s' />""" % (mtype[0], base64_f, prefix)
+    #<img src="data:image/xxx;base64,XXXX..." alt = "filename">
+    output_html = prefix + '.html'
+    message.set_markup(output_html)
+    message.run()
+    opened_html = open(output_html, "w")
+    opened_html.write(html_template)
+    opened_html.close()
+
+    for clip_target in [gtk.gdk.SELECTION_PRIMARY, gtk.gdk.SELECTION_CLIPBOARD]:
+        clipboard = gtk.clipboard_get(clip_target)
+        clipboard.set_can_store(None)
+        clipboard.set_text(base64_f, -1)
+        clipboard.store()
+    message.destroy()
+    gtk.main()
+    return
+
 register(
     "base64_batch_encoder",
     "Base64 batch encoding all png/gif/jpeg from directory",
@@ -210,6 +285,23 @@ register(
     ],
     [],
     plugin_batch_encoder,
-    menu = "<Image>/File/Export/Base_64/")
-    
+    menu = "<Image>/File/Export/Base_64/"
+)
+
+register(
+    "base64_file_encoder",
+    "Base64 encoding",
+    "Encodes selected image to base64 and stores it in a text file",
+    "William Crandell <william@crandell.ws",
+    "William Crandell <william@crandell.ws",
+    "2015",
+    "Base64 Encode",
+    "",
+    [],
+    [],
+    plugin_encode,
+    menu = "<Image>/File/Export/Base_64/"
+)
+
+
 main()
